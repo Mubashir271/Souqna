@@ -1,8 +1,8 @@
 import React from 'react';
-import {StyleProp, StyleSheet, ViewStyle} from 'react-native';
+import {StyleSheet} from 'react-native';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {mvs} from '../../../config/metrices';
-import {colors} from '../../../config/colors';
+import {colors} from '../../../util/color';
+import {mvs} from '../../../util/metrices';
 
 export const KeyboardAvoidScrollview = props => {
   const {
@@ -26,6 +26,7 @@ export const KeyboardAvoidScrollview = props => {
 const styles = StyleSheet.create({
   contentContainerStyle: {
     flexGrow: 1,
+    paddingHorizontal: mvs(30),
     backgroundColor: colors.white,
   },
 });

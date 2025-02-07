@@ -1,32 +1,39 @@
-import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
+import React, {useState} from 'react';
+import {View, TouchableOpacity, StyleSheet} from 'react-native';
 import {
   heightPercentageToDP as hp,
   widthPercentageToDP as wp,
 } from 'react-native-responsive-screen';
+import {BackSVG} from '../../assets/svg';
+import Regular from '../../typography/RegularText';
+import {colors} from '../../util/color';
+import HelpModal from '../Modals/HelpModal';
 
-const Header = ({
-  title,
-  showBackButton = false,
-  onBackPress,
-  rightComponent,
-}) => {
+const Header = ({title, showBackButton = false, onBackPress}) => {
+  const [showHelp, setShowHelp] = useState(false);
+
+  const openHelp = () => {
+    setShowHelp(true);
+  };
+
+  const closeHelp = () => {
+    setShowHelp(false);
+  };
+
   return (
     <View style={styles.container}>
       {showBackButton ? (
         <TouchableOpacity style={styles.backButton} onPress={onBackPress}>
-          <Image
-            source={require('../../assets/icons/back.png')}
-            style={{height: hp(5), width: wp(5), resizeMode: 'contain'}}
-          />
+          <BackSVG width={25} height={25} />
         </TouchableOpacity>
       ) : (
         <View style={styles.placeholder} />
       )}
-      <Text style={styles.title}>{title}</Text>
-      <View style={styles.rightContainer}>
-        {rightComponent ? rightComponent : <View style={styles.placeholder} />}
-      </View>
+      <TouchableOpacity onPress={openHelp}>
+        <Regular style={styles.title}>{title}</Regular>
+      </TouchableOpacity>
+
+      <HelpModal visible={showHelp} onClose={closeHelp} />
     </View>
   );
 };
@@ -38,16 +45,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#fff',
     height: hp(8),
-    // paddingHorizontal: 16,
-    // elevation: 4,
   },
   backButton: {
-    padding: 8,
+    // padding: 8,
   },
   title: {
-    color: '#000',
-    fontSize: 24,
-    fontWeight: 'bold',
+    color: colors.green,
+    fontSize: 16,
   },
   rightContainer: {
     padding: 8,

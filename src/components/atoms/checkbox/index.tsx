@@ -1,9 +1,7 @@
 import React from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
-import { colors } from '../../../util/color';
-import { mvs } from '../../../util/metrices';
-
-// import Icon from 'react-native-vector-icons/AntDesign';
+import {colors} from '../../../util/color';
+import {mvs} from '../../../util/metrices';
 
 type IProps = {
   label?: string | number;
@@ -25,9 +23,7 @@ export const Checkbox = (props: IProps) => {
         },
         containerStyle,
       ]}
-      onPress={onPress}>
-      {/* {checked && <Icon name={'check'} color={iconColor} size={mvs(15)} />} */}
-    </TouchableOpacity>
+      onPress={onPress}></TouchableOpacity>
   );
 };
 const styles = StyleSheet.create({

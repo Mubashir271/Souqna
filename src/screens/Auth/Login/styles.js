@@ -6,6 +6,12 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginTop: mvs(30),
   },
+  HeaderContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: mvs(10),
+  },
   passwordContainer: {
     position: 'relative',
   },
@@ -17,7 +23,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: mvs(30),
-    backgroundColor: colors.black,
+    backgroundColor: colors.white,
+  },
+  title: {
+    fontSize: 30,
+    color: colors.green,
   },
   text: {
     marginVertical: mvs(10),
@@ -57,14 +67,15 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   registerText: {
-    color: colors.white,
+    color: colors.black,
     marginTop: mvs(10),
     textAlign: 'center',
+    // paddingRight: mvs(10),
   },
   registerLink: {
     fontWeight: 'bold',
+    color: colors.green,
     marginBottom: mvs(20),
-    fontSize: mvs(18),
     fontFamily: 'DMSans-Bold',
   },
 });

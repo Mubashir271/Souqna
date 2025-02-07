@@ -1,21 +1,21 @@
 import React, {useState} from 'react';
 import {
-  TouchableOpacity,
   View,
-  Image,
   KeyboardAvoidingView,
-  ScrollView,
+  ToastAndroid,
+  Platform,
+  Alert,
 } from 'react-native';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {useNavigation} from '@react-navigation/native';
 import Regular from '../../../typography/RegularText';
 import styles from './styles';
 import {MyButton} from '../../../components/atoms/InputFields/MyButton';
-import PrimaryTextInput from '../../../components/atoms/InputFields/PrimaryTextInput';
 import {setUser} from '../../../redux/slices/userSlice';
-import LogoSvg from '../../../assets/svg/logo-svg';
-import {EYESVG} from '../../../assets/svg';
+import {EYESVG, SouqnaLogo} from '../../../assets/svg';
 import PrimaryPasswordInput from '../../../components/atoms/InputFields/PrimaryPasswordInput';
+import Bold from '../../../typography/BoldText';
+import Header from '../../../components/Headers/Header';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState('');
@@ -25,6 +25,9 @@ const LoginScreen = () => {
   const navigation = useNavigation();
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
+
+  // Retrieve user credentials from Redux (set during sign-up)
+  const user = useSelector(state => state.user);
 
   const handleLogin = () => {
     if (!isEmailValid(email)) {
@@ -41,10 +44,26 @@ const LoginScreen = () => {
       setPasswordError('');
     }
 
-    const dummyToken = '12345';
-    dispatch(setUser(dummyToken));
-    console.log('Navigating to drawer');
-    navigation.navigate('DrawerNavigation');
+    // Check if email and password match the stored user credentials
+    if (user && user.email === email && user.password === password) {
+      // Successful login: Dispatch user data to Redux and navigate to the home screen
+      dispatch(setUser(user));
+      console.log('Navigating to home screen');
+      navigation.navigate('Home');
+    } else {
+      // Show error message if credentials do not match
+      showErrorMessage();
+    }
+  };
+
+  const showErrorMessage = () => {
+    // Use ToastAndroid for Android
+    if (Platform.OS === 'android') {
+      ToastAndroid.show('Invalid email or password', ToastAndroid.SHORT);
+    } else {
+      // For iOS or other platforms, use Alert
+      Alert.alert('Login Error', 'Invalid email or password');
+    }
   };
 
   const isEmailValid = email => {
@@ -55,55 +74,69 @@ const LoginScreen = () => {
   const isPasswordValid = password => {
     return password.length >= 8;
   };
+
   const navigateToRegister = () => {
     navigation.navigate('Register');
   };
+
   const togglePasswordVisibility = () => {
     setSecurePassword(!securePassword);
   };
+
+  const handleClearEmail = () => {
+    setEmail('');
+  };
+
+  const onBackPress = () => {
+    navigation.goBack();
+  };
+
+  const isFormValid = email && password; // Button activation condition
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}>
-      <ScrollView>
-        <View
-          style={{
-            height: 300,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <LogoSvg />
-        </View>
+      <Header title={'Help'} />
+      <View style={styles.HeaderContainer}>
+        <SouqnaLogo width={50} height={50} />
+        <Bold style={styles.title}>Souqna</Bold>
+      </View>
+
+      <PrimaryPasswordInput
+        value={email}
+        onChangeText={setEmail}
+        placeholder="E-Mail"
+        error={emailError}
+        clearText={handleClearEmail} // Pass clearText function to clear email input
+      />
+
+      <View style={styles.passwordContainer}>
         <PrimaryPasswordInput
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Email address"
-          error={emailError}
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Password"
+          rightIcon={<EYESVG />}
+          secureTextEntry={securePassword}
+          error={passwordError}
         />
+      </View>
 
-        <View style={styles.passwordContainer}>
-          <PrimaryPasswordInput
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Password"
-            rightIcon={<EYESVG />}
-            secureTextEntry={securePassword}
-            error={passwordError}
-          />
-        </View>
-
-        <View style={styles.buttonContainer}>
-          <MyButton title="Sign in" onPress={handleLogin} />
-          <Regular style={styles.registerText}>
-            Don’t have an account?
-            <Regular style={styles.registerLink} onPress={navigateToRegister}>
-              Register
-            </Regular>
+      <View style={styles.buttonContainer}>
+        <MyButton
+          title="Login"
+          onPress={handleLogin}
+          disabled={!isFormValid} // Disable button if form is not valid
+        />
+        <Regular style={styles.registerText}>
+          Don’t have an account?{' '}
+          <Regular style={styles.registerLink} onPress={navigateToRegister}>
+            Register
           </Regular>
-        </View>
-      </ScrollView>
+        </Regular>
+      </View>
     </KeyboardAvoidingView>
   );
 };
+
 export default LoginScreen;

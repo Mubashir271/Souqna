@@ -1,209 +1,193 @@
-import React, {useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
   KeyboardAvoidingView,
-  Platform,
-  ScrollView,
-  Alert,
+  Linking,
+  Animated,
+  TouchableOpacity,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useDispatch} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import Regular from '../../../typography/RegularText';
 import styles from './styles';
-import {MyButton} from '../../../components/atoms/InputFields/MyButton';
-import PrimaryTextInput from '../../../components/atoms/InputFields/PrimaryTextInput';
+import {setUser} from '../../../redux/slices/userSlice';
+import {EYESVG, SouqnaLogo} from '../../../assets/svg';
+import Bold from '../../../typography/BoldText';
+import Header from '../../../components/Headers/Header';
 import {colors} from '../../../util/color';
-import {EYESVG} from '../../../assets/svg';
-import LogoSvg from '../../../assets/svg/logo-svg';
+import RadioGroup from '../../../components/atoms/InputFields/RadioGroup';
 import PrimaryPasswordInput from '../../../components/atoms/InputFields/PrimaryPasswordInput';
-import {KeyboardAvoidScrollview} from '../../../components/atoms/InputFields/KeyboardAvoidScroll';
+import CustomSwitch from '../../../components/atoms/InputFields/CustomSwitch';
+import {MyButton} from '../../../components/atoms/InputFields/MyButton';
 
-const SignUp = ({navigation}) => {
-  const [fullName, setFullName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [acceptTerms, setAcceptTerms] = useState(false);
   const [securePassword, setSecurePassword] = useState(true);
+  const [selectedOption, setSelectedOption] = useState('');
+  const [profilename, setProfilename] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
-  const [nameError, setNameError] = useState('');
-  const [numberError, setNumberError] = useState('');
-  const PHONE_NUMBER_LENGTH = 11;
+  const [isSubscribed, setIsSubscribed] = useState(false); // State to control the Switch
+  const profileNameOpacity = useRef(new Animated.Value(0)).current; // Initial opacity is 0 (hidden)
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
+
+  const handleRegister = () => {
+    if (!isEmailValid(email)) {
+      setEmailError('Please enter a valid email.');
+      return;
+    } else {
+      setEmailError('');
+    }
+
+    if (!isPasswordValid(password)) {
+      setPasswordError('Password must be at least 8 characters.');
+      return;
+    } else {
+      setPasswordError('');
+    }
+
+    if (selectedOption === 'Private' && !profilename) {
+      alert('Please provide a profile name for your private account');
+      return;
+    }
+
+    // Create a dummy token or get one from your API response (for now using a dummy token)
+    const dummyToken = 'some_dummy_token';
+
+    dispatch(
+      setUser({
+        token: dummyToken,
+        email: email,
+        password: password,
+        profileName: selectedOption === 'Private' ? profilename : null,
+      }),
+    );
+
+    navigation.navigate('Login');
+  };
+
   const isEmailValid = email => {
     const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
     return emailRegex.test(email);
   };
+
   const isPasswordValid = password => {
-    const passwordRegex =
-      /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,21}$/;
-    return passwordRegex.test(password);
+    return password.length >= 8;
   };
-  const isPhoneNumberValid = phoneNumber => {
-    return (
-      phoneNumber.length === PHONE_NUMBER_LENGTH && /^\d+$/.test(phoneNumber)
-    );
+
+  const handleClearEmail = () => {
+    setEmail('');
   };
-  const isFormValid = () => {
-    return (
-      fullName &&
-      email &&
-      phoneNumber &&
-      password &&
-      isEmailValid(email) &&
-      isPasswordValid(password) &&
-      isPhoneNumberValid(phoneNumber) &&
-      acceptTerms
-    );
-  };
-  const handleSignUp = async () => {
-    let valid = true;
-    if (!fullName) {
-      setNameError('Full name is required');
-      valid = false;
+
+  useEffect(() => {
+    if (selectedOption === 'Private') {
+      Animated.timing(profileNameOpacity, {
+        toValue: 1,
+        duration: 700,
+        useNativeDriver: true,
+      }).start();
     } else {
-      setNameError('');
+      Animated.timing(profileNameOpacity, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
     }
-    if (!phoneNumber) {
-      setNumberError('Phone number is required');
-      valid = false;
-    } else if (!isPhoneNumberValid(phoneNumber)) {
-      setNumberError('Invalid phone number');
-      valid = false;
-    } else {
-      setNumberError('');
-    }
-    if (!email) {
-      setEmailError('Email is required');
-      valid = false;
-    } else if (!isEmailValid(email)) {
-      setEmailError('Invalid email');
-      valid = false;
-    } else {
-      setEmailError('');
-    }
-    if (!password) {
-      setPasswordError('Password is required');
-      valid = false;
-    } else if (!isPasswordValid(password)) {
-      setPasswordError(
-        'Password must be 8-21 characters, with at least one uppercase letter',
-      );
-      valid = false;
-    } else {
-      setPasswordError('');
-    }
-    if (!acceptTerms) {
-      Alert.alert('You must accept the Terms of Service');
-      valid = false;
-    }
-    if (!valid) {
-      return;
-    }
-    try {
-      const users = await AsyncStorage.getItem('users');
-      const parsedUsers = users ? JSON.parse(users) : [];
-      const userExists = parsedUsers.some(user => user.email === email);
-      if (userExists) {
-        Alert.alert('User already exists');
-        return;
-      }
-      const newUser = {fullName, email, phoneNumber, password};
-      parsedUsers.push(newUser);
-      await AsyncStorage.setItem('users', JSON.stringify(parsedUsers));
-      setUserData({
-        username: fullName,
-        email: email,
-        phoneNumber: phoneNumber,
-        profileImage: null,
-      });
-      Alert.alert('Account created successfully!');
-      navigation.navigate('Login');
-    } catch (error) {
-      console.error('AsyncStorage error: ', error);
-      Alert.alert('Error creating account. Please try again.');
-    }
-  };
-  const togglePasswordVisibility = () => {
-    setSecurePassword(!securePassword);
-  };
-  const toggleAcceptTerms = () => {
-    setAcceptTerms(!acceptTerms);
-  };
+  }, [selectedOption]);
+
   return (
-    <KeyboardAvoidScrollview
+    <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}>
-      <ScrollView>
-        <View
-          style={{
-            height: 300,
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}>
-          <LogoSvg />
-        </View>
-        <PrimaryPasswordInput
-          value={fullName}
-          onChangeText={setFullName}
-          placeholder="Full name"
-          error={nameError}
-        />
-        <PrimaryPasswordInput
-          value={phoneNumber}
-          onChangeText={setPhoneNumber}
-          placeholder="Phone number"
-          error={numberError}
-          keyboardType="phone-pad"
-        />
-        <PrimaryPasswordInput
-          value={email}
-          onChangeText={setEmail}
-          placeholder="Email address"
-          error={emailError}
-        />
-        <View style={styles.passwordContainer}>
+      <Header
+        showBackButton
+        onBackPress={() => navigation.goBack()}
+        title={'Help'}
+      />
+      <View style={styles.HeaderContainer}>
+        <SouqnaLogo width={50} height={50} />
+        <Bold style={styles.title}>Souqna</Bold>
+      </View>
+      <Bold style={styles.howText}>How do you want to use Souqna?</Bold>
+
+      <RadioGroup
+        options={[
+          {value: 'Private', label: 'Private'},
+          {value: 'Commercial', label: 'Commercial'},
+        ]}
+        selectedOption={selectedOption}
+        onSelect={setSelectedOption}
+      />
+
+      {selectedOption === 'Private' && (
+        <Animated.View style={{opacity: profileNameOpacity}}>
           <PrimaryPasswordInput
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Password"
-            rightIcon={<EYESVG />}
-            secureTextEntry={securePassword}
-            error={passwordError}
+            value={profilename}
+            onChangeText={setProfilename}
+            placeholder="Profilename"
           />
-        </View>
-        <View style={styles.termsContainer}>
+        </Animated.View>
+      )}
+
+      <PrimaryPasswordInput
+        value={email}
+        onChangeText={setEmail}
+        placeholder="E-Mail"
+        error={emailError}
+        clearText={handleClearEmail}
+      />
+
+      <View style={styles.passwordContainer}>
+        <PrimaryPasswordInput
+          value={password}
+          onChangeText={setPassword}
+          placeholder="Password"
+          rightIcon={<EYESVG />}
+          secureTextEntry={securePassword}
+          error={passwordError}
+        />
+      </View>
+
+      <View style={styles.switchContainer}>
+        <CustomSwitch
+          value={isSubscribed}
+          onValueChange={setIsSubscribed}
+          trackColor={{false: colors.grey, true: colors.green}}
+          thumbColor={isSubscribed ? colors.white : '#f4f3f4'}
+        />
+        <Regular style={styles.switchText}>
+          Yes, I look forward to receiving regular email updates from the group
+          of companies - you can unsubscribe at any time.
+        </Regular>
+      </View>
+
+      <View style={styles.buttonContainer}>
+        <MyButton
+          title="Register For Free"
+          onPress={handleRegister}
+          disabled={!email || !password} // Disable button if form is not valid
+        />
+        <Regular style={styles.termsText}>
+          Our{' '}
           <TouchableOpacity
-            onPress={toggleAcceptTerms}
-            style={styles.termsContent}>
-            <View
-              style={[
-                styles.checkbox,
-                acceptTerms && {backgroundColor: colors.white},
-              ]}
-            />
-            <Text style={styles.termsText}>
-              I accept all
-              <Text style={styles.termsLink}>Terms of Service</Text> and
-              <Text style={styles.termsLink}>Privacy Policy</Text>
-            </Text>
+            onPress={() => Linking.openURL('https://www.example.com/terms')}>
+            <Regular style={styles.termsLink}>Terms of Use</Regular>
+          </TouchableOpacity>{' '}
+          apply. You can find information about the processing of your data in
+          our{' '}
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL('https://www.example.com/privacy-policy')
+            }>
+            <Regular style={styles.termsLink}>Privacy Policy</Regular>
           </TouchableOpacity>
-        </View>
-        <View style={styles.ButtonContainer}>
-          <MyButton title="Sign up" onPress={handleSignUp} />
-          <Text style={styles.loginText}>
-            Already have an account?
-            <Text
-              style={styles.loginLink}
-              onPress={() => navigation.navigate('Login')}>
-              Sign in
-            </Text>
-          </Text>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidScrollview>
+          .
+        </Regular>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
-export default SignUp;
+
+export default Register;

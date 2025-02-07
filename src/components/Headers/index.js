@@ -1,3 +1,6 @@
 export * from './HomeHeader';
 export * from './Header';
-export * from './Header2';
+export * from './SearchHeader';
+export * from './CategoryHeader';
+export * from './ModalHeader';
+export * from './MainHeader';

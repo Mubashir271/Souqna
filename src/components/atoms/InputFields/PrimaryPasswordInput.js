@@ -8,6 +8,8 @@ import {
 } from 'react-native';
 import {colors} from '../../../util/color';
 import {mvs, width} from '../../../util/metrices';
+import {CrossIconSVG} from '../../../assets/svg';
+
 const PrimaryPasswordInput = ({
   placeholder,
   leftIcon,
@@ -20,20 +22,22 @@ const PrimaryPasswordInput = ({
   error,
   touched,
   editable,
-  style, // This should target the TextInput field specifically
-  containerStyle, // New prop for customizing the outer container
+  style,
+  containerStyle,
+  clearText,
 }) => {
   const [isSecure, setIsSecure] = useState(secureTextEntry);
   const togglePasswordVisibility = () => {
     setIsSecure(!isSecure);
   };
+
   return (
     <View
       style={[
         styles.inputContainer,
-        containerStyle, // Allow customization for the container
+        containerStyle,
         {
-          borderColor: error ? colors.red : colors.gray,
+          borderColor: error ? colors.red : colors.black,
           borderWidth: mvs(1.4),
         },
       ]}>
@@ -45,10 +49,15 @@ const PrimaryPasswordInput = ({
         onChangeText={onChangeText}
         onBlur={onBlur}
         secureTextEntry={isSecure}
-        style={[styles.input, style]} // Merge default and custom styles for TextInput
+        style={[styles.input, style]}
         placeholderTextColor={colors.grey}
         keyboardType={keyboardType}
       />
+      {value && placeholder === 'E-Mail' && (
+        <TouchableOpacity onPress={clearText}>
+          <CrossIconSVG width={20} height={20} />
+        </TouchableOpacity>
+      )}
       {rightIcon && (
         <TouchableOpacity onPress={togglePasswordVisibility}>
           {React.cloneElement(rightIcon, {
@@ -60,17 +69,18 @@ const PrimaryPasswordInput = ({
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   inputContainer: {
-    marginVertical: mvs(1),
     marginTop: mvs(13),
     flexDirection: 'row',
-    backgroundColor: colors.gray,
     gap: mvs(7),
+    borderWidth: mvs(1),
+    borderColor: colors.black,
     borderRadius: mvs(8),
     alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingVertical: mvs(5),
+    paddingHorizontal: 6,
+    paddingVertical: mvs(2),
     marginBottom: mvs(10),
   },
   input: {
@@ -84,7 +94,7 @@ const styles = StyleSheet.create({
     fontSize: mvs(12),
     fontWeight: '500',
     bottom: -16,
-    // left: 10,
   },
 });
+
 export default PrimaryPasswordInput;

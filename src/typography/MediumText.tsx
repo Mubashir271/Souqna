@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  ColorValue,
-  StyleProp,
-  StyleSheet,
-  Text,
-  TextStyle,
-  View,
-} from 'react-native';
+import {ColorValue, StyleProp, StyleSheet, Text, TextStyle} from 'react-native';
 import {mvs} from '../util/metrices';
 import {colors} from '../util/color';
 import fonts from '../assets/fonts';

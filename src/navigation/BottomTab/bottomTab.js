@@ -1,81 +1,139 @@
-import React from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {useSelector} from 'react-redux';
 import {
-  ChatSVG,
+  AdvertiseSVG,
+  HeartSVG,
   HOMESVG,
-  NotificationSVG,
+  NewsSVG,
   ProfileSVG,
-  SettingSVG,
+  SearchSVG,
 } from '../../assets/svg';
 import {colors} from '../../util/color';
 import {mvs} from '../../util/metrices';
-import HomeScreen from '../../screens/App/Home';
-import Chat from '../../screens/App/Chat';
-import NotificationScreen from '../../screens/App/Notification';
-import Settings from '../../screens/App/Settings';
 import Profile from '../../screens/App/Profile';
+import SearchScreen from '../../screens/App/Search';
+import FavouriteScreen from '../../screens/App/Favourite';
+import NewsScreen from '../../screens/App/News';
+import AdvertiseScreen from '../../screens/App/Advertise';
+import Bold from '../../typography/BoldText';
+import AddModal from '../../components/Modals/AddModal';
+import {createStackNavigator} from '@react-navigation/stack';
+
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+
 const MyTabs = () => {
+  const {token} = useSelector(state => state.user); // Token will indicate if the user is logged in
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const handleLoginSuccess = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleTabPress = (e, route, navigation) => {
+    if (!token) {
+      e.preventDefault(); // Prevent navigation if not logged in
+      setIsModalVisible(true); // Show the modal if not logged in
+    } else {
+      navigation.navigate(route.name);
+    }
+  };
+
   return (
-    <Tab.Navigator
-      screenOptions={({route}) => ({
-        headerShown: false,
-        tabBarShowLabel: false,
-        tabBarStyle: styles.tabBar,
-        tabBarIcon: ({focused}) => {
-          let IconComponent;
-          let label;
-          switch (route.name) {
-            case 'Home':
-              IconComponent = HOMESVG;
-              label = 'Home';
-              break;
-            case 'Chat':
-              IconComponent = ChatSVG;
-              label = 'Chat';
-              break;
-            case 'Notification':
-              IconComponent = NotificationSVG;
-              label = 'Notfication';
-              break;
-            case 'Settings':
-              IconComponent = SettingSVG;
-              label = 'Settings';
-              break;
-            case 'Profile':
-              IconComponent = ProfileSVG;
-              label = 'Profile';
-              break;
-            default:
-              IconComponent = HOMESVG;
-          }
-          if (IconComponent) {
+    <View style={{flex: 1}}>
+      <Tab.Navigator
+        screenOptions={({route}) => ({
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarStyle: styles.tabBar,
+          tabBarActiveTintColor: colors.green,
+          tabBarIcon: ({focused}) => {
+            let IconComponent;
+            let label;
+            const activeColor = colors.green;
+            const inactiveColor = colors.grey;
+
+            switch (route.name) {
+              case 'Search':
+                IconComponent = SearchSVG;
+                label = 'Search';
+                break;
+              case 'Favourite':
+                IconComponent = HeartSVG;
+                label = 'Favourite';
+                break;
+              case 'Advertise':
+                IconComponent = AdvertiseSVG;
+                label = 'Advertise';
+                break;
+              case 'News':
+                IconComponent = NewsSVG;
+                label = 'News';
+                break;
+              case 'Profile':
+                IconComponent = ProfileSVG;
+                label = 'Profile';
+                break;
+              default:
+                IconComponent = HOMESVG;
+                label = 'Home';
+            }
+
             return (
               <View style={styles.iconContainer}>
-                <IconComponent color={focused ? colors.primary : colors.grey} />
-                <Text
+                <IconComponent color={focused ? activeColor : inactiveColor} />
+                <Bold
                   style={[
                     styles.label,
-                    {color: focused ? colors.primary : colors.grey},
+                    {color: focused ? activeColor : inactiveColor},
                   ]}>
                   {label}
-                </Text>
+                </Bold>
               </View>
             );
-          } else {
-            return null;
-          }
-        },
-      })}>
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Chat" component={Chat} />
-      <Tab.Screen name="Notification" component={NotificationScreen} />
-      <Tab.Screen name="Settings" component={Settings} />
-      <Tab.Screen name="Profile" component={Profile} />
-    </Tab.Navigator>
+          },
+        })}>
+        <Tab.Screen name="Search" component={SearchScreen} />
+        <Tab.Screen
+          name="Favourite"
+          component={FavouriteScreen}
+          listeners={({navigation, route}) => ({
+            tabPress: e => handleTabPress(e, route, navigation),
+          })}
+        />
+        <Tab.Screen
+          name="Advertise"
+          component={AdvertiseScreen}
+          listeners={({navigation, route}) => ({
+            tabPress: e => handleTabPress(e, route, navigation),
+          })}
+        />
+        <Tab.Screen
+          name="News"
+          component={NewsScreen}
+          listeners={({navigation, route}) => ({
+            tabPress: e => handleTabPress(e, route, navigation),
+          })}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={Profile}
+          listeners={({navigation, route}) => ({
+            tabPress: e => handleTabPress(e, route, navigation),
+          })}
+        />
+      </Tab.Navigator>
+
+      <AddModal
+        visible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+      />
+    </View>
   );
 };
+
 const styles = StyleSheet.create({
   tabBar: {
     backgroundColor: colors.white,
@@ -85,8 +143,9 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 12,
+    color: colors.green,
     textAlign: 'center',
-    width: 50,
+    width: mvs(60),
     marginTop: mvs(3),
     fontFamily: 'DMSans-regular',
   },
@@ -96,4 +155,5 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
 });
+
 export default MyTabs;

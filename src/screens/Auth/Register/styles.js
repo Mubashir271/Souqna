@@ -1,71 +1,127 @@
 import {StyleSheet} from 'react-native';
-import {mvs} from '../../../util/metrices';
 import {colors} from '../../../util/color';
+import {mvs} from '../../../util/metrices';
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: mvs(30),
-    backgroundColor: colors.black,
+  buttonContainer: {
+    marginTop: mvs(30),
   },
-  logoContainer: {
-    height: mvs(300),
+  HeaderContainer: {
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  logo: {
-    width: '50%',
-    height: '50%',
+    marginBottom: mvs(30),
   },
   passwordContainer: {
     position: 'relative',
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: mvs(20),
+    marginBottom: mvs(20),
+  },
+  switchText: {
+    flex: 1,
+    marginLeft: mvs(10),
+    fontSize: mvs(14),
+    color: colors.darkGray,
   },
   iconContainer: {
     position: 'absolute',
     right: mvs(15),
     top: mvs(15),
   },
-  icon1: {
-    width: mvs(24),
-    height: mvs(24),
+  container: {
+    flex: 1,
+    paddingHorizontal: mvs(30),
+    backgroundColor: colors.white,
   },
-  termsContainer: {
+  title: {
+    fontSize: mvs(30),
+    color: colors.green,
+  },
+  radioButtonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: mvs(15),
+    marginBottom: mvs(10),
+  },
+  radioButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: mvs(10),
-  },
-  termsContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  checkbox: {
-    width: mvs(20),
-    height: mvs(20),
-    marginRight: mvs(10),
     borderWidth: mvs(1),
-    borderColor: colors.white,
-    backgroundColor: 'transparent',
-    borderRadius: mvs(5),
+    borderRadius: mvs(8),
+    paddingVertical: mvs(4),
+    paddingHorizontal: mvs(38),
   },
-  termsText: {
-    color: colors.white,
+  selectedRadioButton: {
+    borderColor: colors.green,
+  },
+  radioButtonLabel: {
+    fontSize: mvs(16),
+    color: colors.black,
+    marginLeft: mvs(10),
+  },
+  radioCircle: {
+    width: mvs(16),
+    height: mvs(16),
+    borderRadius: mvs(10),
+    borderWidth: 2,
+    borderColor: colors.black,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  selectedCircle: {
+    backgroundColor: colors.lightgreen,
+  },
+  radioDot: {
+    width: mvs(5),
+    height: mvs(5),
+    borderRadius: mvs(4),
+    backgroundColor: colors.black,
+  },
+  howText: {
     fontSize: mvs(14),
   },
+  whenText: {
+    color: colors.green,
+    marginBottom: mvs(10),
+  },
+  input: {
+    marginRight: mvs(10),
+    paddingLeft: mvs(10),
+    borderWidth: mvs(1),
+    borderColor: colors.gray1,
+    borderRadius: mvs(5),
+    height: mvs(50),
+    width: '100%',
+  },
+  inputError: {
+    borderColor: colors.red,
+  },
+  errorText: {
+    color: colors.red,
+    fontSize: mvs(12),
+    marginTop: mvs(5),
+  },
+  eyeIcon: {
+    position: 'absolute',
+    right: mvs(10),
+    top: mvs(12),
+    zIndex: 1,
+  },
+  termsText: {
+    color: colors.grey,
+    fontSize: mvs(14),
+    marginTop: mvs(20),
+    textAlign: 'left',
+  },
   termsLink: {
-    fontWeight: 'bold',
-  },
-  ButtonContainer: {
-    marginTop: mvs(30),
-  },
-  loginText: {
-    color: colors.white,
-    textAlign: 'center',
-    marginTop: mvs(10),
-  },
-  loginLink: {
-    color: colors.white,
-    fontFamily: 'DMSans-Bold',
-    fontSize: mvs(18),
+    color: colors.green,
+    textDecorationLine: 'underline',
+    lineHeight: mvs(10), // Match the lineHeight to the regular text
+    paddingTop: 0,
   },
 });
 

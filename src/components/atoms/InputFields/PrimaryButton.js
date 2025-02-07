@@ -1,16 +1,15 @@
-import React from "react";
-import { StyleSheet, TouchableOpacity } from "react-native";
-
-import Label from "./Label";
-import { mvs } from "../../config/metrices";
-import { colors } from "../../config/colors";
-import { Loader } from "../atoms/loader";
+import React from 'react';
+import {StyleSheet, TouchableOpacity} from 'react-native';
+import Label from './Label';
+import {mvs} from '../../config/metrices';
+import {colors} from '../../config/colors';
+import {Loader} from '../atoms/loader';
 const PrimaryButton = ({
   disabled,
   loading = false,
   onclick,
-  label = "click me",
-  color = "white",
+  label = 'click me',
+  color = 'white',
   width,
   height = 53,
   style,
@@ -19,9 +18,8 @@ const PrimaryButton = ({
   return (
     <TouchableOpacity
       disabled={disabled}
-      style={{ ...styles.main, width: width, height: height, ...style }}
-      onPress={onclick}
-    >
+      style={{...styles.main, width: width, height: height, ...style}}
+      onPress={onclick}>
       {loading ? (
         <Loader color={colors.white} />
       ) : (
@@ -29,7 +27,7 @@ const PrimaryButton = ({
           label={label}
           size={mvs(16)}
           color={color}
-          style={{ ...textStyle }}
+          style={{...textStyle}}
         />
       )}
     </TouchableOpacity>
@@ -39,8 +37,8 @@ export default PrimaryButton;
 const styles = StyleSheet.create({
   main: {
     backgroundColor: colors.primary,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: mvs(12),
   },
 });

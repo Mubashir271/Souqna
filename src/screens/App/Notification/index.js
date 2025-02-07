@@ -1,39 +1,47 @@
-import React, {useState} from 'react';
-import {View, TouchableOpacity, FlatList, Alert} from 'react-native';
-import {HomeHeader} from '../../../components/Headers';
-import notificationsData from '../../../util/dummyData';
-import {NotificationSVG} from '../../../assets/svg';
-import Bold from '../../../typography/BoldText';
-import Regular from '../../../typography/RegularText';
-import styles from './styles';
+import React from 'react';
+import {View, Text, TouchableOpacity, FlatList} from 'react-native';
+import {colors} from '../../../util/color';
+import {useNavigation} from '@react-navigation/native';
+import CategoryHeader from '../../../components/Headers/CategoryHeader';
+import Notificationsvg from '../../../assets/svg/notification-svg';
+import dummyData from '../../../util/dummyData';
+import styles from './style';
 
-const NotificationScreen = () => {
-  const handleNotificationClick = notification => {
-    Alert.alert(notification.title, notification.message);
+const Notification = () => {
+  const navigation = useNavigation();
+  const {notificationsData} = dummyData;
+
+  const handleBack = () => {
+    navigation.goBack();
+  };
+
+  const renderItem = ({item}) => {
+    return (
+      <View style={styles.notificationItem}>
+        <TouchableOpacity style={styles.notificationIcon}>
+          <Notificationsvg color={colors.green} />
+        </TouchableOpacity>
+
+        <View style={styles.notificationTextContainer}>
+          <Text style={styles.notificationTitle}>{item.title}</Text>
+          <Text style={styles.notificationText}>{item.message}</Text>
+        </View>
+      </View>
+    );
   };
 
   return (
     <View style={styles.container}>
-      <HomeHeader title="Notifications" back />
+      <CategoryHeader title={'Notification'} onBack={handleBack} />
+
       <FlatList
         data={notificationsData}
+        renderItem={renderItem}
         keyExtractor={item => item.id}
-        renderItem={({item}) => (
-          <TouchableOpacity
-            style={styles.notificationItem}
-            onPress={() => handleNotificationClick(item)}>
-            <View style={styles.notificationContent}>
-              <NotificationSVG style={styles.icon} />
-              <View style={styles.textContainer}>
-                <Bold>{item.title}</Bold>
-                <Regular>{item.message}</Regular>
-              </View>
-            </View>
-          </TouchableOpacity>
-        )}
+        contentContainerStyle={styles.notificationContainer}
       />
     </View>
   );
 };
 
-export default NotificationScreen;
+export default Notification;

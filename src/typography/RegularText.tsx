@@ -15,7 +15,7 @@ type FcProps = {
 const Regular: React.FC<FcProps> = ({
   label,
   fontSize = 14,
-  color = colors.gray,
+  color = colors.black,
   numberOfLines,
   children,
   style,

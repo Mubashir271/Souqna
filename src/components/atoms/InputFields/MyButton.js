@@ -1,13 +1,16 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
 import {colors} from '../../../util/color';
+import {mvs} from '../../../util/metrices';
 const MyButton = ({onPress, title, disabled, icon, widt, color}) => {
   return (
     <TouchableOpacity
       style={[
         styles.container,
         {
-          backgroundColor: disabled ? colors.grey : color || colors.primary,
+          backgroundColor: disabled
+            ? colors.lightpastelgreen
+            : color || colors.lightgreen,
           height: 55,
           width: widt ? widt : '100%',
         },
@@ -25,12 +28,12 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 12,
+    borderRadius: mvs(20),
   },
   text: {
-    fontSize: 17,
+    fontSize: mvs(17),
     fontWeight: '400',
-    color: '#fff',
+    color: colors.green,
     fontFamily: 'DMSans',
   },
   view1: {
